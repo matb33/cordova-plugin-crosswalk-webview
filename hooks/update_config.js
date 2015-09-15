@@ -105,8 +105,8 @@ module.exports = function(context) {
         var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
         var preferenceUpdated = false;
         for (name in xwalkVariables) {
-            var child = configXmlRoot.find('./preference[@name="' + name + '"]');
-            if(!child) {
+            var children = configXmlRoot.findall('.//preference[@name="' + name + '"]') || [];
+            if(!children.length) {
                 preferenceUpdated = true;
                 child = et.XML('<preference name="' + name + '" value="' + xwalkVariables[name] + '" />');
                 XmlHelpers.graftXML(configXmlRoot, [child], '/*');
@@ -126,9 +126,9 @@ module.exports = function(context) {
 
         var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
         for (name in xwalkVariables) {
-            var child = configXmlRoot.find('./preference[@name="' + name + '"]');
-            if (child) {
-                XmlHelpers.pruneXML(configXmlRoot, [child], '/*');
+            var children = configXmlRoot.findall('.//preference[@name="' + name + '"]');
+            if (children) {
+                XmlHelpers.pruneXML(configXmlRoot, children, '/*');
             }
         }
         fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
